@@ -1,0 +1,60 @@
+---
+title: "Simulation of CLT and LLN App"
+author: "Gaurav Kamath"
+date: "`r Sys.Date()`"
+output: slidy_presentation
+---
+
+## Intorduction
+
+- The Central Limit Theorem in Statistics states that as the sample size increases and its variance is finite, then the distribution of the sample mean approaches normal distribution irrespective of the shape of the population distribution.
+- In probability theory, the law of large numbers (LLN) is a mathematical theorem that states that the average of the results obtained from a large number of independent and identical random samples converges to the true value.
+- With the help of simulations with R we aim to prove these to theorems for various distributions
+
+
+## Distributions Considerd
+
+- This application has considered 3 commonly used distributions for proving LLN and CLT.
+1. Normal Distribution
+2. Exponential Distribution. 
+3. Poisson Distribution
+- The user gets to select the lambda value of the distribution and simulations parameters such as sample size and number of simulations
+
+## Generation of distributin
+### for this example we will consider the poisson  distribution
+```{r}
+lambda <- 5 # These are user input in the app.
+sample_size <- 5
+no_simulations <- 10
+
+# We use rpois to generate the numbers
+data <- rpois(sample_size * no_simulations, lambda)
+
+# We reshape into a matrix with each row corresponding to a simulation
+simulations <- matrix(data, nrow=no_simulations, ncol = sample_size)
+head(simulations)
+
+# We compute the means along the rows to get sample means for each simulation
+mean_vector <- apply(simulations, 1, mean)
+head(mean_vector)
+```
+
+## Plotting the Histogram
+Here we plot the histogram with the simulation means and draw a line at theoritical and sample mean
+
+```{r}
+hist(mean_vector, 
+             breaks = 50,  # Bins can be varies by user in the app.
+             prob = TRUE, 
+             col="lightblue",
+             main = "Means of  exponential distributions simulations", 
+             xlab = "Spread")
+        lines(density(mean_vector))
+        abline(v = lambda, col = "red")
+        xfit <- seq(min(mean_vector), max(mean_vector), length = 100)
+        yfit <- dnorm(xfit, mean = lambda)
+        abline(v = mean(mean_vector), col = "orange", pch=22)
+        legend('topright', c("Simulation", "Theoretical Values"), 
+               bty = "n", lty = c(1,2), col = c("orange", "red"))
+
+```
